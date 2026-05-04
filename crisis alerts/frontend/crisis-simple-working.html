@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crisis Resource Allocation - Simple Working</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; color: white; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        .controls, .status, .agents { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; margin: 5px; cursor: pointer; font-weight: 600; }
+        .btn-start { background: #4caf50; color: white; }
+        .btn-stop { background: #ff9800; color: white; }
+        .btn-reset { background: #2196f3; color: white; }
+        .btn-disaster { background: #f44336; color: white; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .metric { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
+        .metric-value { font-size: 1.5rem; font-weight: bold; color: #333; }
+        .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .agent { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; }
+        .agent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .agent-status { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .status-critical { background: #ffebee; color: #f44336; }
+        .status-failing { background: #fff3e0; color: #ff9800; }
+        .status-stable { background: #e8f5e8; color: #4caf50; }
+        .message { padding: 15px; border-radius: 8px; margin: 10px 0; font-weight: 600; }
+        .success { background: #e8f5e8; color: #388e3c; }
+        .error { background: #ffebee; color: #d32f2f; }
+        .info { background: #e3f2fd; color: #1976d2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Crisis Resource Allocation - Simple Working</h1>
+        </div>
+
+        <div class="controls">
+            <h2>Simulation Control</h2>
+            <button class="btn btn-start" onclick="startSimulation()">▶ Start</button>
+            <button class="btn btn-stop" onclick="stopSimulation()">⏸ Stop</button>
+            <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
+            
+            <div style="margin-top: 15px;">
+                <label>Disaster Type:</label>
+                <select id="disasterType">
+                    <option value="">-- Select Disaster Type --</option>
+                    <option value="earthquake">🌋 Earthquake</option>
+                    <option value="flood">🌊 Flood</option>
+                    <option value="power_failure">⚡ Power Failure</option>
+                    <option value="storm">🌪️ Storm</option>
+                </select>
+                
+                <label>Impact Level:</label>
+                <select id="impactLevel">
+                    <option value="0.3">Medium (0.3)</option>
+                    <option value="0.5">High (0.5)</option>
+                    <option value="0.8">Severe (0.8)</option>
+                </select>
+                
+                <button class="btn btn-disaster" onclick="triggerDisaster()">⚡ Trigger Disaster</button>
+            </div>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div class="status">
+            <h3>System Status</h3>
+            <div class="metrics">
+                <div class="metric">
+                    <h4>Total Supply</h4>
+                    <div class="metric-value" id="totalSupply">100.0</div>
+                </div>
+                <div class="metric">
+                    <h4>Total Demand</h4>
+                    <div class="metric-value" id="totalDemand">670.0</div>
+                </div>
+                <div class="metric">
+                    <h4>Allocated</h4>
+                    <div class="metric-value" id="totalAllocated">208.0</div>
+                </div>
+                <div class="metric">
+                    <h4>System Stress</h4>
+                    <div class="metric-value" id="systemStress">80.0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="agents">
+            <h3>Agent Status Details</h3>
+            <div class="agent-grid" id="agentGrid">
+                <!-- Agents will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple working crisis simulation
+        class SimpleCrisisSimulation {
+            constructor() {
+                this.agents = [
+                    { id: "H1", name: "City Hospital H1", type: "hospital", demand: 100, allocated: 50, min_required: 30 },
+                    { id: "H2", name: "City Hospital H2", type: "hospital", demand: 120, allocated: 40, min_required: 25 },
+                    { id: "E1", name: "Emergency Services E1", type: "emergency_services", demand: 80, allocated: 30, min_required: 20 },
+                    { id: "E2", name: "Emergency Services E2", type: "emergency_services", demand: 90, allocated: 25, min_required: 22 },
+                    { id: "W1", name: "Water Supply Station W1", type: "water_supply", demand: 60, allocated: 20, min_required: 15 },
+                    { id: "W2", name: "Water Supply Station W2", type: "water_supply", demand: 70, allocated: 18, min_required: 18 },
+                    { id: "R1", name: "Residential/Commercial Zone R1", type: "residential_commercial", demand: 50, allocated: 10, min_required: 5 },
+                    { id: "R2", name: "Residential/Commercial Zone R2", type: "residential_commercial", demand: 55, allocated: 8, min_required: 6 },
+                    { id: "R3", name: "Residential/Commercial Zone R3", type: "residential_commercial", demand: 45, allocated: 7, min_required: 4 }
+                ];
+                
+                this.totalSupply = 100.0;
+                this.systemStress = 0.8;
+                this.isRunning = false;
+                
+                // Initialize calculations
+                this.updateCalculations();
+                this.updateDisplay();
+            }
+
+            updateCalculations() {
+                this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                this.totalAllocated = this.agents.reduce((sum, agent) => sum + agent.allocated, 0);
+            }
+
+            getAgentStatus(agent) {
+                if (agent.allocated >= agent.demand) return "stable";
+                if (agent.allocated >= agent.min_required) return "failing";
+                return "critical";
+            }
+
+            startSimulation() {
+                this.isRunning = true;
+                showMessage("Simulation started", "success");
+            }
+
+            stopSimulation() {
+                this.isRunning = false;
+                showMessage("Simulation stopped", "success");
+            }
+
+            resetSimulation() {
+                this.agents.forEach(agent => {
+                    agent.demand = agent.demand * 0.8;
+                    agent.allocated = agent.min_required;
+                });
+                this.updateCalculations();
+                this.updateDisplay();
+                showMessage("Simulation reset", "success");
+            }
+
+            triggerDisaster() {
+                const disasterType = document.getElementById('disasterType').value;
+                const impact = parseFloat(document.getElementById('impactLevel').value);
+
+                if (!disasterType) {
+                    showMessage("Please select a disaster type", "error");
+                    return;
+                }
+
+                console.log('=== DISASTER TRIGGERED ===');
+                console.log('Disaster Type:', disasterType);
+                console.log('Impact Level:', impact);
+                console.log('Total Demand BEFORE:', this.totalDemand);
+
+                // Apply disaster effects with different multipliers per agent
+                if (disasterType === "earthquake") {
+                    this.totalSupply *= (1 - impact * 0.4);
+                    this.agents[0].demand *= (1 + impact * 0.6); // H1: +60%
+                    this.agents[1].demand *= (1 + impact * 0.4); // H2: +40%
+                    this.agents[2].demand *= (1 + impact * 0.35); // E1: +35%
+                    this.agents[3].demand *= (1 + impact * 0.25); // E2: +25%
+                    this.agents[4].demand *= (1 + impact * 0.3); // W1: +30%
+                    this.agents[5].demand *= (1 + impact * 0.2); // W2: +20%
+                    this.agents[6].demand *= (1 + impact * 0.15); // R1: +15%
+                    this.agents[7].demand *= (1 + impact * 0.12); // R2: +12%
+                    this.agents[8].demand *= (1 + impact * 0.1); // R3: +10%
+                    this.systemStress = Math.min(0.95, this.systemStress + impact * 0.2);
+                    
+                } else if (disasterType === "flood") {
+                    this.totalSupply *= (1 - impact * 0.3);
+                    this.agents[0].demand *= (1 + impact * 0.2); // H1: +20%
+                    this.agents[1].demand *= (1 + impact * 0.25); // H2: +25%
+                    this.agents[2].demand *= (1 + impact * 0.3); // E1: +30%
+                    this.agents[3].demand *= (1 + impact * 0.2); // E2: +20%
+                    this.agents[4].demand *= (1 + impact * 0.4); // W1: +40%
+                    this.agents[5].demand *= (1 + impact * 0.35); // W2: +35%
+                    this.agents[6].demand *= (1 + impact * 0.15); // R1: +15%
+                    this.agents[7].demand *= (1 + impact * 0.12); // R2: +12%
+                    this.agents[8].demand *= (1 + impact * 0.1); // R3: +10%
+                    this.systemStress = Math.min(0.90, this.systemStress + impact * 0.15);
+                    
+                } else if (disasterType === "power_failure") {
+                    this.totalSupply *= (1 - impact * 0.5);
+                    this.agents[0].demand *= (1 + impact * 0.3); // H1: +30%
+                    this.agents[1].demand *= (1 + impact * 0.25); // H2: +25%
+                    this.agents[2].demand *= (1 + impact * 0.2); // E1: +20%
+                    this.agents[3].demand *= (1 + impact * 0.15); // E2: +15%
+                    this.agents[4].demand *= (1 + impact * 0.35); // W1: +35%
+                    this.agents[5].demand *= (1 + impact * 0.3); // W2: +30%
+                    this.agents[6].demand *= (1 + impact * 0.1); // R1: +10%
+                    this.agents[7].demand *= (1 + impact * 0.08); // R2: +8%
+                    this.agents[8].demand *= (1 + impact * 0.05); // R3: +5%
+                    this.systemStress = Math.min(0.98, this.systemStress + impact * 0.25);
+                    
+                } else if (disasterType === "storm") {
+                    this.totalSupply *= (1 - impact * 0.35);
+                    this.agents[0].demand *= (1 + impact * 0.25); // H1: +25%
+                    this.agents[1].demand *= (1 + impact * 0.2); // H2: +20%
+                    this.agents[2].demand *= (1 + impact * 0.3); // E1: +30%
+                    this.agents[3].demand *= (1 + impact * 0.25); // E2: +25%
+                    this.agents[4].demand *= (1 + impact * 0.2); // W1: +20%
+                    this.agents[5].demand *= (1 + impact * 0.15); // W2: +15%
+                    this.agents[6].demand *= (1 + impact * 0.25); // R1: +25%
+                    this.agents[7].demand *= (1 + impact * 0.2); // R2: +20%
+                    this.agents[8].demand *= (1 + impact * 0.15); // R3: +15%
+                    this.systemStress = Math.min(0.92, this.systemStress + impact * 0.18);
+                }
+
+                // CRITICAL: Update total demand after individual demand changes
+                this.updateCalculations();
+                
+                console.log('Total Demand AFTER:', this.totalDemand);
+                console.log('Agent demands AFTER:', this.agents.map(a => `${a.id}: ${a.demand.toFixed(1)}`));
+
+                this.reallocateResources();
+                this.updateDisplay();
+                showMessage(`${disasterType.toUpperCase()} disaster triggered with ${impact * 100}% impact`, "success");
+            }
+
+            reallocateResources() {
+                // Simple allocation based on priority
+                const sortedAgents = [...this.agents].sort((a, b) => {
+                    const priorityOrder = { "hospital": 1, "emergency_services": 2, "water_supply": 3, "residential_commercial": 4 };
+                    return priorityOrder[a.type] - priorityOrder[b.type];
+                });
+                
+                let remainingSupply = this.totalSupply;
+                
+                sortedAgents.forEach(agent => {
+                    if (remainingSupply >= agent.min_required) {
+                        agent.allocated = agent.min_required;
+                        remainingSupply -= agent.min_required;
+                    } else {
+                        agent.allocated = remainingSupply * 0.8;
+                        remainingSupply -= agent.allocated;
+                    }
+                });
+                
+                this.updateCalculations();
+            }
+
+            updateDisplay() {
+                // Update system metrics
+                document.getElementById('totalSupply').textContent = this.totalSupply.toFixed(1);
+                document.getElementById('totalDemand').textContent = this.totalDemand.toFixed(1);
+                document.getElementById('totalAllocated').textContent = this.totalAllocated.toFixed(1);
+                document.getElementById('systemStress').textContent = (this.systemStress * 100).toFixed(1) + '%';
+
+                // Update agents
+                const agentGrid = document.getElementById('agentGrid');
+                agentGrid.innerHTML = '';
+
+                this.agents.forEach(agent => {
+                    const status = this.getAgentStatus(agent);
+                    const statusClass = status === 'critical' ? 'status-critical' : 
+                                       status === 'failing' ? 'status-failing' : 'status-stable';
+                    
+                    const allocationRatio = agent.demand > 0 ? (agent.allocated / agent.demand) * 100 : 0;
+                    
+                    const agentDiv = document.createElement('div');
+                    agentDiv.className = 'agent';
+                    agentDiv.innerHTML = `
+                        <div class="agent-header">
+                            <div><strong>${agent.name}</strong></div>
+                            <div class="agent-status ${statusClass}">${status.toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div>Type: ${agent.type}</div>
+                            <div>Demand: ${agent.demand.toFixed(1)}</div>
+                            <div>Allocated: ${agent.allocated.toFixed(1)}</div>
+                            <div>Allocation: ${allocationRatio.toFixed(1)}%</div>
+                        </div>
+                    `;
+                    
+                    agentGrid.appendChild(agentDiv);
+                });
+            }
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('messageArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageArea.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Initialize simulation
+        const simulation = new SimpleCrisisSimulation();
+        
+        // Bind event handlers
+        window.startSimulation = () => simulation.startSimulation();
+        window.stopSimulation = () => simulation.stopSimulation();
+        window.resetSimulation = () => simulation.resetSimulation();
+        window.triggerDisaster = () => simulation.triggerDisaster();
+    </script>
+</body>
+</html>

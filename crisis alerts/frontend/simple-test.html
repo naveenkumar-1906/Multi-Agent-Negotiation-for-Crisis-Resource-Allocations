@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Agent Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .agent { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .hospital { border-left: 5px solid #f44336; }
+        .emergency { border-left: 5px solid #ff9800; }
+        .water { border-left: 5px solid #2196f3; }
+        .residential { border-left: 5px solid #4caf50; }
+        .status { padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .failing { background: #fff3e0; color: #ff9800; }
+        .critical { background: #ffebee; color: #f44336; }
+        .stable { background: #e8f5e8; color: #4caf50; }
+        button { padding: 10px 20px; margin: 10px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🚨 Crisis Resource Allocation - Agent Status</h1>
+    <button onclick="loadAgents()">Load Agent Data</button>
+    <button onclick="startSimulation()">Start Simulation</button>
+    
+    <div style="margin: 10px 0;">
+        <label for="disasterType">Disaster Type:</label>
+        <select id="disasterType">
+            <option value="earthquake">🌋 Earthquake</option>
+            <option value="flood">🌊 Flood</option>
+            <option value="power_failure">⚡ Power Failure</option>
+            <option value="storm">🌪️ Storm</option>
+        </select>
+        <label for="impact">Impact:</label>
+        <select id="impact">
+            <option value="0.3">Medium (0.3)</option>
+            <option value="0.5">High (0.5)</option>
+            <option value="0.8">Severe (0.8)</option>
+        </select>
+    </div>
+    
+    <button onclick="triggerDisaster()">Trigger Selected Disaster</button>
+    <div id="status"></div>
+    <div id="agents"></div>
+
+    <script>
+        async function loadAgents() {
+            const statusDiv = document.getElementById('status');
+            const agentsDiv = document.getElementById('agents');
+            
+            try {
+                statusDiv.innerHTML = '🔄 Loading agent data...';
+                
+                const response = await fetch('http://localhost:8000/api/status');
+                const data = await response.json();
+                
+                statusDiv.innerHTML = `✅ Connected! Found ${data.agents.length} agents | Timestamp: ${data.timestamp} | System Stress: ${(data.system_stress * 100).toFixed(1)}%`;
+                
+                agentsDiv.innerHTML = '';
+                
+                data.agents.forEach(agent => {
+                    const agentDiv = document.createElement('div');
+                    agentDiv.className = `agent ${agent.type}`;
+                    agentDiv.innerHTML = `
+                        <h3>${getIcon(agent.type)} ${agent.name}</h3>
+                        <p><strong>Status:</strong> <span class="status ${agent.status}">${agent.status.toUpperCase()}</span></p>
+                        <p><strong>Priority:</strong> P${agent.priority}</p>
+                        <p><strong>Demand:</strong> ${agent.demand.toFixed(1)} units</p>
+                        <p><strong>Allocated:</strong> ${agent.allocated.toFixed(1)} units</p>
+                        <p><strong>Allocation Ratio:</strong> ${(agent.allocation_ratio * 100).toFixed(1)}%</p>
+                        <p><strong>Penalty:</strong> ${agent.penalty.toFixed(1)}</p>
+                    `;
+                    agentsDiv.appendChild(agentDiv);
+                });
+                
+            } catch (error) {
+                statusDiv.innerHTML = `❌ Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+        
+        function getIcon(type) {
+            switch(type) {
+                case 'hospital': return '🏥';
+                case 'emergency_services': return '🚑';
+                case 'water_supply': return '💧';
+                case 'residential_commercial': return '🏢';
+                default: return '📊';
+            }
+        }
+        
+        async function startSimulation() {
+            try {
+                const response = await fetch('http://localhost:8000/api/simulation/start', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message);
+                setTimeout(loadAgents, 2000);
+            } catch (error) {
+                alert('Error starting simulation: ' + error.message);
+            }
+        }
+        
+        async function triggerDisaster() {
+            try {
+                const disasterType = document.getElementById('disasterType').value;
+                const impact = parseFloat(document.getElementById('impact').value);
+                
+                const response = await fetch('http://localhost:8000/api/disaster/trigger', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: disasterType, impact: impact })
+                });
+                const result = await response.json();
+                alert(`${disasterType.toUpperCase()} disaster triggered with impact ${impact}! ${result.message}`);
+                setTimeout(loadAgents, 2000);
+            } catch (error) {
+                alert('Error triggering disaster: ' + error.message);
+            }
+        }
+        
+        // Auto-load on page open
+        window.onload = () => {
+            loadAgents();
+            // Auto-refresh every 3 seconds
+            setInterval(loadAgents, 3000);
+        };
+    </script>
+</body>
+</html>

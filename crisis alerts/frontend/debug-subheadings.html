@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Subheadings</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px; margin: 5px; }
+        .metric { background: #f0f0f0; padding: 10px; margin: 5px; display: inline-block; }
+        .debug { background: #fffacd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Debug Subheadings in Crisis System</h1>
+    
+    <div class="test-section">
+        <h3>Current Subheadings:</h3>
+        <div class="metric">
+            <h4 id="statusTitle">System Status</h4>
+            <div>Main Title</div>
+        </div>
+        <div class="metric">
+            <h4 id="metric1Title">Power Supply</h4>
+            <div>Value: 100.0</div>
+        </div>
+        <div class="metric">
+            <h4 id="metric2Title">Total Demand</h4>
+            <div>Value: 670.0</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Functions:</h3>
+        <button onclick="testDirectUpdate()">Test Direct Update</button>
+        <button onclick="testFunctionUpdate()">Test Function Update</button>
+        <button onclick="testCrisisSystem()">Test Crisis System</button>
+        <button onclick="resetSubheadings()">Reset</button>
+    </div>
+    
+    <div class="debug" id="debugInfo">
+        Click a test button to see debug info
+    </div>
+
+    <script>
+        function updateDebug(message) {
+            document.getElementById('debugInfo').innerHTML = message;
+        }
+
+        function testDirectUpdate() {
+            updateDebug('Testing direct DOM update...');
+            
+            // Direct DOM manipulation
+            const statusTitle = document.getElementById('statusTitle');
+            const metric1Title = document.getElementById('metric1Title');
+            const metric2Title = document.getElementById('metric2Title');
+            
+            if (statusTitle) {
+                statusTitle.textContent = '🌋 Earthquake Response Status';
+                updateDebug('Direct update successful: ' + statusTitle.textContent);
+            } else {
+                updateDebug('ERROR: Could not find statusTitle element');
+            }
+            
+            if (metric1Title) metric1Title.textContent = 'Grid Power';
+            if (metric2Title) metric2Title.textContent = 'Medical Demand';
+        }
+
+        function testFunctionUpdate() {
+            updateDebug('Testing function-based update...');
+            
+            // Call the updateSubheadings function
+            updateSubheadings('earthquake');
+            updateDebug('Function update completed');
+        }
+
+        function updateSubheadings(disasterType = null) {
+            updateDebug('updateSubheadings called with: ' + disasterType);
+            
+            // Get all elements
+            const statusTitle = document.getElementById('statusTitle');
+            const metric1Title = document.getElementById('metric1Title');
+            const metric2Title = document.getElementById('metric2Title');
+            
+            updateDebug('Elements found: statusTitle=' + !!statusTitle + ', metric1Title=' + !!metric1Title + ', metric2Title=' + !!metric2Title);
+            
+            if (!disasterType) {
+                // Default subheadings
+                if (statusTitle) statusTitle.textContent = 'System Status';
+                if (metric1Title) metric1Title.textContent = 'Power Supply';
+                if (metric2Title) metric2Title.textContent = 'Total Demand';
+                updateDebug('Set default subheadings');
+                return;
+            }
+
+            // Disaster-specific subheadings
+            if (disasterType === "earthquake") {
+                if (statusTitle) statusTitle.textContent = '🌋 Earthquake Response Status';
+                if (metric1Title) metric1Title.textContent = 'Grid Power';
+                if (metric2Title) metric2Title.textContent = 'Medical Demand';
+                updateDebug('Set earthquake subheadings');
+            } else if (disasterType === "flood") {
+                if (statusTitle) statusTitle.textContent = '🌊 Flood Response Status';
+                if (metric1Title) metric1Title.textContent = 'Power Availability';
+                if (metric2Title) metric2Title.textContent = 'Water Demand';
+                updateDebug('Set flood subheadings');
+            }
+        }
+
+        function testCrisisSystem() {
+            updateDebug('Testing crisis system simulation...');
+            
+            // Simulate the crisis system trigger
+            const disasterType = 'earthquake';
+            updateDebug('Simulating ' + disasterType + ' disaster');
+            
+            // Call the same function that crisis system calls
+            updateSubheadings(disasterType);
+            
+            // Check if it worked
+            const statusTitle = document.getElementById('statusTitle');
+            if (statusTitle && statusTitle.textContent.includes('Earthquake')) {
+                updateDebug('✅ Crisis system simulation SUCCESS: ' + statusTitle.textContent);
+            } else {
+                updateDebug('❌ Crisis system simulation FAILED: ' + (statusTitle ? statusTitle.textContent : 'element not found'));
+            }
+        }
+
+        function resetSubheadings() {
+            updateSubheadings(null);
+            updateDebug('Reset to default subheadings');
+        }
+    </script>
+</body>
+</html>

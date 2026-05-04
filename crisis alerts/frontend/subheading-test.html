@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subheading Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px; margin: 5px; }
+        .metric { background: #f0f0f0; padding: 10px; margin: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Subheading Test</h1>
+    
+    <div class="test-section">
+        <h3>Current Subheadings:</h3>
+        <div class="metric">
+            <h4 id="metric1Title">Power Supply</h4>
+            <div>Value: 100.0</div>
+        </div>
+        <div class="metric">
+            <h4 id="metric2Title">Total Demand</h4>
+            <div>Value: 670.0</div>
+        </div>
+        <div class="metric">
+            <h4 id="statusTitle">System Status</h4>
+            <div>Main Title</div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Buttons:</h3>
+        <button onclick="testEarthquake()">Test Earthquake</button>
+        <button onclick="testFlood()">Test Flood</button>
+        <button onclick="testPowerFailure()">Test Power Failure</button>
+        <button onclick="testStorm()">Test Storm</button>
+        <button onclick="testReset()">Reset</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Debug Info:</h3>
+        <div id="debugInfo">Click a test button to see debug info</div>
+    </div>
+
+    <script>
+        function updateDebugInfo(message) {
+            document.getElementById('debugInfo').innerHTML = message;
+        }
+
+        function testEarthquake() {
+            updateDebugInfo('Testing earthquake subheadings...');
+            
+            // Test direct DOM manipulation
+            const title1 = document.getElementById('metric1Title');
+            const title2 = document.getElementById('metric2Title');
+            const statusTitle = document.getElementById('statusTitle');
+            
+            updateDebugInfo('Found elements: ' + 
+                'title1=' + (title1 ? title1.textContent : 'null') + ', ' +
+                'title2=' + (title2 ? title2.textContent : 'null') + ', ' +
+                'statusTitle=' + (statusTitle ? statusTitle.textContent : 'null'));
+            
+            if (title1) {
+                title1.textContent = 'Grid Power';
+                updateDebugInfo('Updated title1 to: ' + title1.textContent);
+            }
+            
+            if (title2) {
+                title2.textContent = 'Medical Demand';
+                updateDebugInfo('Updated title2 to: ' + title2.textContent);
+            }
+            
+            if (statusTitle) {
+                statusTitle.textContent = '🌋 Earthquake Response Status';
+                updateDebugInfo('Updated statusTitle to: ' + statusTitle.textContent);
+            }
+        }
+
+        function testFlood() {
+            updateDebugInfo('Testing flood subheadings...');
+            
+            const title1 = document.getElementById('metric1Title');
+            const title2 = document.getElementById('metric2Title');
+            const statusTitle = document.getElementById('statusTitle');
+            
+            if (title1) title1.textContent = 'Power Availability';
+            if (title2) title2.textContent = 'Water Demand';
+            if (statusTitle) statusTitle.textContent = '🌊 Flood Response Status';
+            
+            updateDebugInfo('Updated to flood subheadings');
+        }
+
+        function testPowerFailure() {
+            updateDebugInfo('Testing power failure subheadings...');
+            
+            const title1 = document.getElementById('metric1Title');
+            const title2 = document.getElementById('metric2Title');
+            const statusTitle = document.getElementById('statusTitle');
+            
+            if (title1) title1.textContent = 'Backup Power';
+            if (title2) title2.textContent = 'Critical Demand';
+            if (statusTitle) statusTitle.textContent = '⚡ Power Failure Response';
+            
+            updateDebugInfo('Updated to power failure subheadings');
+        }
+
+        function testStorm() {
+            updateDebugInfo('Testing storm subheadings...');
+            
+            const title1 = document.getElementById('metric1Title');
+            const title2 = document.getElementById('metric2Title');
+            const statusTitle = document.getElementById('statusTitle');
+            
+            if (title1) title1.textContent = 'Available Power';
+            if (title2) title2.textContent = 'Storm Demand';
+            if (statusTitle) statusTitle.textContent = '🌪️ Storm Response Status';
+            
+            updateDebugInfo('Updated to storm subheadings');
+        }
+
+        function testReset() {
+            updateDebugInfo('Testing reset subheadings...');
+            
+            const title1 = document.getElementById('metric1Title');
+            const title2 = document.getElementById('metric2Title');
+            const statusTitle = document.getElementById('statusTitle');
+            
+            if (title1) title1.textContent = 'Power Supply';
+            if (title2) title2.textContent = 'Total Demand';
+            if (statusTitle) statusTitle.textContent = 'System Status';
+            
+            updateDebugInfo('Reset to default subheadings');
+        }
+    </script>
+</body>
+</html>

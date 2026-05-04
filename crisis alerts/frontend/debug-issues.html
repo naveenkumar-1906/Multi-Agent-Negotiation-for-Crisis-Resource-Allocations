@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Critical Issues</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px; margin: 5px; }
+        .agent { background: #f0f0f0; padding: 10px; margin: 5px; display: inline-block; }
+        .debug { background: #fffacd; padding: 10px; margin: 10px 0; font-family: monospace; }
+        .critical { color: red; font-weight: bold; }
+        .failing { color: orange; font-weight: bold; }
+        .stable { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Debug Critical Issues</h1>
+    
+    <div class="test-section">
+        <h3>Current Agents:</h3>
+        <div id="agentDisplay"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Functions:</h3>
+        <button onclick="testInitialDemands()">Test Initial Demands</button>
+        <button onclick="testEarthquake()">Test Earthquake Disaster</button>
+        <button onclick="testFlood()">Test Flood Disaster</button>
+        <button onclick="testAnalytics()">Test Analytics Count</button>
+        <button onclick="resetAgents()">Reset Agents</button>
+    </div>
+    
+    <div class="debug" id="debugInfo">
+        Click a test button to see debug info
+    </div>
+
+    <script>
+        let agents = [
+            { id: "H1", name: "City Hospital H1", type: "hospital", priority: 1, demand: 100, allocated: 50, min_required: 30 },
+            { id: "H2", name: "City Hospital H2", type: "hospital", priority: 1, demand: 120, allocated: 40, min_required: 25 },
+            { id: "E1", name: "Emergency Services E1", type: "emergency_services", priority: 2, demand: 80, allocated: 30, min_required: 20 },
+            { id: "E2", name: "Emergency Services E2", type: "emergency_services", priority: 2, demand: 90, allocated: 25, min_required: 22 },
+            { id: "W1", name: "Water Supply Station W1", type: "water_supply", priority: 3, demand: 60, allocated: 20, min_required: 15 },
+            { id: "W2", name: "Water Supply Station W2", type: "water_supply", priority: 3, demand: 70, allocated: 18, min_required: 18 },
+            { id: "R1", name: "Residential/Commercial Zone R1", type: "residential_commercial", priority: 4, demand: 50, allocated: 10, min_required: 5 },
+            { id: "R2", name: "Residential/Commercial Zone R2", type: "residential_commercial", priority: 4, demand: 55, allocated: 8, min_required: 6 },
+            { id: "R3", name: "Residential/Commercial Zone R3", type: "residential_commercial", priority: 4, demand: 45, allocated: 7, min_required: 4 }
+        ];
+
+        function updateDebug(message) {
+            document.getElementById('debugInfo').innerHTML = message;
+        }
+
+        function getAgentStatus(agent) {
+            if (agent.allocated >= agent.demand) {
+                return "stable";
+            } else if (agent.allocated >= agent.min_required) {
+                return "failing";
+            } else {
+                return "critical";
+            }
+        }
+
+        function displayAgents() {
+            const display = document.getElementById('agentDisplay');
+            display.innerHTML = '';
+            
+            agents.forEach(agent => {
+                const status = getAgentStatus(agent);
+                const statusClass = status === 'critical' ? 'critical' : 
+                                   status === 'failing' ? 'failing' : 'stable';
+                
+                const agentDiv = document.createElement('div');
+                agentDiv.className = 'agent';
+                agentDiv.innerHTML = `
+                    <strong>${agent.name}</strong><br>
+                    Type: ${agent.type}<br>
+                    Demand: ${agent.demand.toFixed(1)}<br>
+                    Allocated: ${agent.allocated.toFixed(1)}<br>
+                    Min Required: ${agent.min_required}<br>
+                    Status: <span class="${statusClass}">${status.toUpperCase()}</span>
+                `;
+                display.appendChild(agentDiv);
+            });
+        }
+
+        function testInitialDemands() {
+            updateDebug('Testing initial demands...');
+            let debugInfo = 'Initial Agent Demands:<br>';
+            agents.forEach(agent => {
+                debugInfo += `${agent.id}: ${agent.demand.toFixed(1)} (type: ${agent.type})<br>`;
+            });
+            updateDebug(debugInfo);
+            displayAgents();
+        }
+
+        function testEarthquake() {
+            updateDebug('Testing earthquake disaster...');
+            const impact = 0.5;
+            
+            // Apply earthquake effects
+            agents.forEach(agent => {
+                if (agent.type === "hospital") {
+                    agent.demand *= (1 + impact * 0.5); // +50%
+                } else if (agent.type === "emergency_services") {
+                    agent.demand *= (1 + impact * 0.3); // +30%
+                } else if (agent.type === "water_supply") {
+                    agent.demand *= (1 + impact * 0.2); // +20%
+                } else if (agent.type === "residential_commercial") {
+                    agent.demand *= (1 + impact * 0.1); // +10%
+                }
+            });
+            
+            let debugInfo = 'After Earthquake (0.5 impact):<br>';
+            agents.forEach(agent => {
+                debugInfo += `${agent.id}: ${agent.demand.toFixed(1)} (type: ${agent.type})<br>`;
+            });
+            updateDebug(debugInfo);
+            displayAgents();
+        }
+
+        function testFlood() {
+            updateDebug('Testing flood disaster...');
+            const impact = 0.5;
+            
+            // Apply flood effects
+            agents.forEach(agent => {
+                if (agent.type === "water_supply") {
+                    agent.demand *= (1 + impact * 0.4); // +40%
+                } else if (agent.type === "hospital") {
+                    agent.demand *= (1 + impact * 0.2); // +20%
+                } else if (agent.type === "emergency_services") {
+                    agent.demand *= (1 + impact * 0.25); // +25%
+                } else if (agent.type === "residential_commercial") {
+                    agent.demand *= (1 + impact * 0.15); // +15%
+                }
+            });
+            
+            let debugInfo = 'After Flood (0.5 impact):<br>';
+            agents.forEach(agent => {
+                debugInfo += `${agent.id}: ${agent.demand.toFixed(1)} (type: ${agent.type})<br>`;
+            });
+            updateDebug(debugInfo);
+            displayAgents();
+        }
+
+        function testAnalytics() {
+            updateDebug('Testing analytics count...');
+            
+            // Count critical agents
+            const criticalAgents = agents.filter(a => getAgentStatus(a) === "critical").length;
+            const failingAgents = agents.filter(a => getAgentStatus(a) === "failing").length;
+            const stableAgents = agents.filter(a => getAgentStatus(a) === "stable").length;
+            
+            let debugInfo = `Analytics Count:<br>`;
+            debugInfo += `Critical agents: ${criticalAgents}<br>`;
+            debugInfo += `Failing agents: ${failingAgents}<br>`;
+            debugInfo += `Stable agents: ${stableAgents}<br><br>`;
+            
+            debugInfo += `Agent Details:<br>`;
+            agents.forEach(agent => {
+                const status = getAgentStatus(agent);
+                debugInfo += `${agent.id}: demand=${agent.demand.toFixed(1)}, allocated=${agent.allocated.toFixed(1)}, status=${status}<br>`;
+            });
+            
+            updateDebug(debugInfo);
+            displayAgents();
+        }
+
+        function resetAgents() {
+            updateDebug('Resetting agents...');
+            agents = [
+                { id: "H1", name: "City Hospital H1", type: "hospital", priority: 1, demand: 100, allocated: 50, min_required: 30 },
+                { id: "H2", name: "City Hospital H2", type: "hospital", priority: 1, demand: 120, allocated: 40, min_required: 25 },
+                { id: "E1", name: "Emergency Services E1", type: "emergency_services", priority: 2, demand: 80, allocated: 30, min_required: 20 },
+                { id: "E2", name: "Emergency Services E2", type: "emergency_services", priority: 2, demand: 90, allocated: 25, min_required: 22 },
+                { id: "W1", name: "Water Supply Station W1", type: "water_supply", priority: 3, demand: 60, allocated: 20, min_required: 15 },
+                { id: "W2", name: "Water Supply Station W2", type: "water_supply", priority: 3, demand: 70, allocated: 18, min_required: 18 },
+                { id: "R1", name: "Residential/Commercial Zone R1", type: "residential_commercial", priority: 4, demand: 50, allocated: 10, min_required: 5 },
+                { id: "R2", name: "Residential/Commercial Zone R2", type: "residential_commercial", priority: 4, demand: 55, allocated: 8, min_required: 6 },
+                { id: "R3", name: "Residential/Commercial Zone R3", type: "residential_commercial", priority: 4, demand: 45, allocated: 7, min_required: 4 }
+            ];
+            updateDebug('Agents reset to initial values');
+            displayAgents();
+        }
+
+        // Initial display
+        displayAgents();
+    </script>
+</body>
+</html>

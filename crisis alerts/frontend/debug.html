@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Agent Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { color: #666; margin: 10px 0; }
+        .error { color: red; }
+        .success { color: green; }
+        .agent { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Debug Agent Data Loading</h1>
+    <div id="status">Testing API connection...</div>
+    <div id="agents"></div>
+    
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const agentsDiv = document.getElementById('agents');
+            
+            try {
+                statusDiv.innerHTML = '<div class="status">Fetching data from backend...</div>';
+                
+                const response = await fetch('http://localhost:8000/api/status');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                statusDiv.innerHTML = '<div class="success">✅ API Connection Successful!</div>';
+                statusDiv.innerHTML += `<div class="status">Timestamp: ${data.timestamp}</div>`;
+                statusDiv.innerHTML += `<div class="status">Total Supply: ${data.total_supply}</div>`;
+                statusDiv.innerHTML += `<div class="status">Total Demand: ${data.total_demand}</div>`;
+                statusDiv.innerHTML += `<div class="status">Agents Count: ${data.agents.length}</div>`;
+                
+                agentsDiv.innerHTML = '<h2>Agent Details:</h2>';
+                
+                data.agents.forEach((agent, index) => {
+                    const agentDiv = document.createElement('div');
+                    agentDiv.className = 'agent';
+                    agentDiv.innerHTML = `
+                        <strong>${agent.name}</strong><br>
+                        Type: ${agent.type}<br>
+                        Status: ${agent.status}<br>
+                        Demand: ${agent.demand.toFixed(2)}<br>
+                        Allocated: ${agent.allocated.toFixed(2)}<br>
+                        Priority: P${agent.priority}
+                    `;
+                    agentsDiv.appendChild(agentDiv);
+                });
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('API Error:', error);
+            }
+        }
+        
+        // Test immediately
+        testAPI();
+        
+        // Test every 3 seconds
+        setInterval(testAPI, 3000);
+    </script>
+</body>
+</html>

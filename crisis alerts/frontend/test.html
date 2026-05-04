@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <div id="status">Loading...</div>
+    <div id="agents"></div>
+    
+    <script>
+        // Test REST API first
+        fetch('/api/status')
+            .then(response => response.json())
+            .then(data => {
+                console.log('API Data:', data);
+                document.getElementById('status').innerHTML = `
+                    <p>Total Supply: ${data.total_supply}</p>
+                    <p>Total Demand: ${data.total_demand}</p>
+                    <p>Agents: ${data.agents.length}</p>
+                `;
+                
+                const agentsDiv = document.getElementById('agents');
+                data.agents.forEach(agent => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <h3>${agent.name}</h3>
+                        <p>Type: ${agent.type}</p>
+                        <p>Status: ${agent.status}</p>
+                        <p>Demand: ${agent.demand}</p>
+                        <p>Allocated: ${agent.allocated}</p>
+                    `;
+                    agentsDiv.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = 'Error loading data';
+            });
+    </script>
+</body>
+</html>
