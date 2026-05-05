@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crisis Resource Allocation System</title>
+    <title>Working Crisis System</title>
     <style>
         * {
             margin: 0;
@@ -15,78 +15,55 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f5f5f5;
             line-height: 1.6;
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .app-header h1 {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 600;
-        }
-
-        .connection-status {
-            font-size: 0.9rem;
-        }
-
-        .status-indicator {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        .status-indicator.connected {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .status-indicator.disconnected {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .main-content {
-            padding: 20px;
+        .container {
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        .control-panel {
-            background: white;
-            border-radius: 12px;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            border-radius: 12px;
             margin-bottom: 20px;
+            text-align: center;
         }
 
-        .control-panel h2 {
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls h2 {
             margin-top: 0;
             color: #333;
-            font-size: 1.5rem;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
-        }
-
-        .simulation-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .button-group {
             display: flex;
             gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .disaster-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
@@ -102,703 +79,746 @@
             letter-spacing: 0.5px;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+        .btn-start { background: #4caf50; color: white; }
+        .btn-stop { background: #ff9800; color: white; }
+        .btn-reset { background: #2196f3; color: white; }
+        .btn-disaster { background: #f44336; color: white; }
+        .btn-analytics { background: #607d8b; color: white; }
 
-        .btn-start {
-            background: linear-gradient(135deg, #4caf50, #45a049);
-            color: white;
-        }
-
-        .btn-stop {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-            color: white;
-        }
-
-        .btn-reset {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
-            color: white;
-        }
-
-        .btn-disaster {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
-        }
-
-        .status.running {
-            background-color: #e8f5e8;
-            color: #4caf50;
-            border: 2px solid #4caf50;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .status.stopped {
-            background-color: #ffebee;
-            color: #f44336;
-            border: 2px solid #f44336;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .disaster-controls {
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-
-        .disaster-controls h3 {
-            color: #555;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-        }
-
-        .disaster-selector {
-            margin-bottom: 15px;
-        }
-
-        .disaster-selector label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .disaster-selector select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: white;
-        }
-
-        .impact-slider {
-            margin-bottom: 20px;
-        }
-
-        .impact-slider label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .impact-slider input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #ddd;
-            outline: none;
-        }
-
-        .status-panel {
+        .status {
             background: white;
-            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .status-panel h2 {
+        .status h3 {
             margin-top: 0;
             color: #333;
-            font-size: 1.5rem;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
         }
 
-        .status-grid {
+        .metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .status-card {
+        .metric {
             background: #f8f9fa;
-            border-radius: 8px;
             padding: 15px;
+            border-radius: 8px;
             border-left: 4px solid #667eea;
         }
 
-        .status-card h3 {
+        .metric h4 {
             margin: 0 0 10px 0;
             font-size: 0.9rem;
             color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .metric-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #333;
-            margin-bottom: 8px;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-            border-radius: 4px;
-        }
-
-        .agent-grid {
+        .agents {
             background: white;
-            border-radius: 12px;
             padding: 20px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
         }
 
-        .agent-grid h2 {
+        .agents h3 {
             margin-top: 0;
             color: #333;
-            font-size: 1.5rem;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
         }
 
-        .agents-container {
+        .agent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .agent-card {
+        .agent {
             background: #f8f9fa;
-            border-radius: 10px;
             padding: 15px;
+            border-radius: 8px;
             border-left: 4px solid #667eea;
             transition: transform 0.2s ease;
         }
 
-        .agent-card:hover {
+        .agent:hover {
             transform: translateY(-2px);
         }
 
+        .agent.hospital { border-left-color: #f44336; }
+        .agent.emergency { border-left-color: #ff9800; }
+        .agent.water { border-left-color: #2196f3; }
+        .agent.residential { border-left-color: #4caf50; }
+
         .agent-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .agent-icon {
-            font-size: 2rem;
-            margin-right: 10px;
-        }
-
-        .agent-info {
-            flex: 1;
-        }
-
         .agent-name {
-            margin: 0;
-            font-size: 1.1rem;
-            color: #333;
             font-weight: 600;
+            color: #333;
         }
 
         .agent-status {
-            display: inline-block;
             padding: 4px 8px;
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 5px;
         }
 
-        .agent-status.critical {
-            background-color: #ffebee;
-            color: #f44336;
-            border: 1px solid #f44336;
-        }
-
-        .agent-status.stable {
-            background-color: #e8f5e8;
-            color: #4caf50;
-            border: 1px solid #4caf50;
-        }
-
-        .agent-status.failing {
-            background-color: #fff3e0;
-            color: #ff9800;
-            border: 1px solid #ff9800;
-        }
+        .status-critical { background: #ffebee; color: #f44336; }
+        .status-failing { background: #fff3e0; color: #ff9800; }
+        .status-stable { background: #e8f5e8; color: #4caf50; }
 
         .priority-badge {
-            display: inline-block;
             padding: 6px 10px;
             border-radius: 15px;
             font-size: 0.8rem;
             font-weight: bold;
             color: white;
-            text-align: center;
             min-width: 40px;
+            text-align: center;
         }
 
-        .priority-badge.priority-1 {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-        }
-
-        .priority-badge.priority-2 {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-        }
-
-        .priority-badge.priority-3 {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
-        }
-
-        .priority-badge.priority-4 {
-            background: linear-gradient(135deg, #4caf50, #388e3c);
-        }
+        .priority-1 { background: #f44336; }
+        .priority-2 { background: #ff9800; }
+        .priority-3 { background: #2196f3; }
+        .priority-4 { background: #4caf50; }
 
         .agent-metrics {
-            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
 
         .metric-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 4px 0;
+            padding: 2px 0;
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .metric-label {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .metric-value {
-            font-size: 0.9rem;
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
             font-weight: 600;
+        }
+
+        .success { background: #e8f5e8; color: #388e3c; }
+        .error { background: #ffebee; color: #d32f2f; }
+        .info { background: #e3f2fd; color: #1976d2; }
+        .warning { background: #fff3e0; color: #f57c00; }
+
+        .analytics-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-panel h3 {
+            margin-top: 0;
             color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
         }
 
-        .loading {
+        .efficiency-score {
+            font-size: 3rem;
+            font-weight: bold;
             text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            color: #666;
+            margin: 20px 0;
         }
 
-        @media (max-width: 768px) {
-            .app-header {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .app-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .main-content {
-                padding: 10px;
-            }
-            
-            .status-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 15px;
-            }
-            
-            .agents-container {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
+        .efficiency-high { color: #4caf50; }
+        .efficiency-medium { color: #ff9800; }
+        .efficiency-low { color: #f44336; }
+
+        .suggestions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .suggestion-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <header class="app-header">
-            <h1>Crisis Resource Allocation System</h1>
-            <div class="connection-status">
-                <span class="status-indicator" id="connectionStatus">○ Disconnected</span>
-            </div>
-        </header>
-        
-        <main class="main-content">
-            <div class="control-panel">
-                <h2>Simulation Control</h2>
-                
-                <div class="simulation-controls">
-                    <div class="button-group">
-                        <button class="btn btn-start" id="startBtn" onclick="startSimulation()">▶ Start</button>
-                        <button class="btn btn-stop" id="stopBtn" onclick="stopSimulation()">⏸ Stop</button>
-                        <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
-                    </div>
-                    
-                    <div class="status-indicator">
-                        <span class="status stopped" id="simulationStatus">○ Stopped</span>
-                    </div>
-                </div>
-                
-                <div class="disaster-controls">
-                    <h3>Disaster Events</h3>
-                    
-                    <div class="disaster-selector">
-                        <label for="disaster-type">Disaster Type:</label>
-                        <select id="disaster-type">
-                            <option value="earthquake">Earthquake</option>
-                            <option value="flood">Flood</option>
-                            <option value="power_failure">Power Failure</option>
-                            <option value="storm">Storm</option>
-                        </select>
-                    </div>
-                    
-                    <div class="impact-slider">
-                        <label for="impact-level">Impact Level: <span id="impactValue">0.3</span></label>
-                        <input type="range" id="impact-level" min="0.1" max="1.0" step="0.1" value="0.3" oninput="updateImpactValue(this.value)">
-                    </div>
-                    
-                    <button class="btn btn-disaster" onclick="triggerDisaster()">⚡ Trigger Disaster</button>
-                </div>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Working Crisis Resource Allocation System</h1>
+        </div>
+
+        <div class="controls">
+            <h2>Simulation Control</h2>
+            <div class="button-group">
+                <button class="btn btn-start" onclick="startSimulation()">▶ Start</button>
+                <button class="btn btn-stop" onclick="stopSimulation()">⏸ Stop</button>
+                <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
+                <button class="btn btn-analytics" onclick="showAnalytics()">📊 Analytics</button>
             </div>
             
-            <div class="status-panel">
-                <h2>System Status</h2>
+            <div class="disaster-controls">
+                <label>Disaster Type:</label>
+                <select id="disasterType" onchange="onDisasterTypeChange()">
+                    <option value="">-- Select Disaster Type --</option>
+                    <option value="earthquake">🌋 Earthquake</option>
+                    <option value="flood">🌊 Flood</option>
+                    <option value="power_failure">⚡ Power Failure</option>
+                    <option value="storm">🌪️ Storm</option>
+                </select>
                 
-                <div class="status-grid">
-                    <div class="status-card">
-                        <h3>Power Supply</h3>
-                        <div class="metric-value" id="totalSupply">0.0</div>
-                    </div>
-                    
-                    <div class="status-card">
-                        <h3>Total Demand</h3>
-                        <div class="metric-value" id="totalDemand">0.0</div>
-                    </div>
-                    
-                    <div class="status-card">
-                        <h3>Allocated</h3>
-                        <div class="metric-value" id="totalAllocated">0.0</div>
-                    </div>
-                    
-                    <div class="status-card">
-                        <h3>Utilization</h3>
-                        <div class="metric-value" id="utilization">0.0%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="utilizationBar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="status-card">
-                        <h3>System Stress</h3>
-                        <div class="metric-value" id="systemStress">0.0%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="stressBar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="status-card">
-                        <h3>Total Penalty</h3>
-                        <div class="metric-value" id="totalPenalty">0.0</div>
-                    </div>
+                <label>Impact Level:</label>
+                <select id="impactLevel">
+                    <option value="0.3">Medium (0.3)</option>
+                    <option value="0.5">High (0.5)</option>
+                    <option value="0.8">Severe (0.8)</option>
+                </select>
+                
+                <button class="btn btn-disaster" onclick="triggerDisaster()">⚡ Trigger Disaster</button>
+            </div>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div class="status">
+            <h3 id="statusTitle">System Status</h3>
+            <div class="metrics">
+                <div class="metric">
+                    <h4 id="metric1Title">Power Supply</h4>
+                    <div class="metric-value" id="totalSupply">100.0</div>
+                </div>
+                <div class="metric">
+                    <h4 id="metric2Title">Total Demand</h4>
+                    <div class="metric-value" id="totalDemand">670.0</div>
+                </div>
+                <div class="metric">
+                    <h4 id="metric3Title">Allocated</h4>
+                    <div class="metric-value" id="totalAllocated">208.0</div>
+                </div>
+                <div class="metric">
+                    <h4 id="metric4Title">System Stress</h4>
+                    <div class="metric-value" id="systemStress">80.0%</div>
+                </div>
+                <div class="metric">
+                    <h4 id="metric5Title">Efficiency Score</h4>
+                    <div class="metric-value" id="efficiencyScore">40.0%</div>
+                </div>
+                <div class="metric">
+                    <h4 id="metric6Title">System Health</h4>
+                    <div class="metric-value" id="systemHealth">WARNING</div>
                 </div>
             </div>
-            
-            <div class="agent-grid">
-                <h2>Agent Status Details</h2>
-                <div class="agents-container" id="agentsContainer">
-                    <div class="loading">Loading agent data...</div>
-                </div>
+        </div>
+
+        <div id="analyticsPanel" class="analytics-panel" style="display: none;">
+            <h3>📊 Performance Analytics</h3>
+            <div class="efficiency-score" id="efficiencyDisplay">40%</div>
+            <div class="suggestions" id="suggestionsList">
+                <h4>Optimization Suggestions:</h4>
+                <div id="suggestionsContent">Loading analytics...</div>
             </div>
-        </main>
+        </div>
+
+        <div class="agents">
+            <h3>Agent Status Details</h3>
+            <div class="agent-grid" id="agentGrid">
+                <!-- Agents will be populated by JavaScript -->
+            </div>
+        </div>
     </div>
 
     <script>
-        let ws = null;
-        let simulationData = null;
-        let isRunning = false;
-
-        function connectWebSocket() {
-            ws = new WebSocket('ws://localhost:8000/ws');
-            
-            ws.onopen = () => {
-                console.log('Connected to server');
-                document.getElementById('connectionStatus').className = 'status-indicator connected';
-                document.getElementById('connectionStatus').textContent = '● Connected';
-            };
-            
-            ws.onmessage = (event) => {
-                const message = JSON.parse(event.data);
+        // Global variables for subheadings
+        let currentDisaster = null;
+        
+        // Crisis simulation with working subheadings
+        class WorkingCrisisSimulation {
+            constructor() {
+                this.agents = [
+                    { id: "H1", name: "City Hospital H1", type: "hospital", priority: 1, demand: 100, allocated: 50, min_required: 30 },
+                    { id: "H2", name: "City Hospital H2", type: "hospital", priority: 1, demand: 120, allocated: 40, min_required: 25 },
+                    { id: "E1", name: "Emergency Services E1", type: "emergency_services", priority: 2, demand: 80, allocated: 30, min_required: 20 },
+                    { id: "E2", name: "Emergency Services E2", type: "emergency_services", priority: 2, demand: 90, allocated: 25, min_required: 22 },
+                    { id: "W1", name: "Water Supply Station W1", type: "water_supply", priority: 3, demand: 60, allocated: 20, min_required: 15 },
+                    { id: "W2", name: "Water Supply Station W2", type: "water_supply", priority: 3, demand: 70, allocated: 18, min_required: 18 },
+                    { id: "R1", name: "Residential/Commercial Zone R1", type: "residential_commercial", priority: 4, demand: 50, allocated: 10, min_required: 5 },
+                    { id: "R2", name: "Residential/Commercial Zone R2", type: "residential_commercial", priority: 4, demand: 55, allocated: 8, min_required: 6 },
+                    { id: "R3", name: "Residential/Commercial Zone R3", type: "residential_commercial", priority: 4, demand: 45, allocated: 7, min_required: 4 }
+                ];
                 
-                switch (message.type) {
-                    case 'initial_state':
-                    case 'simulation_update':
-                        simulationData = message.data;
-                        updateUI();
-                        break;
-                    case 'simulation_reset':
-                        simulationData = message.data;
-                        updateUI();
-                        break;
-                    case 'disaster_triggered':
-                        console.log('Disaster triggered:', message.data);
-                        break;
-                    default:
-                        console.log('Unknown message type:', message.type);
+                this.totalSupply = 100.0;
+                this.systemStress = 0.8;
+                this.isRunning = false;
+                this.dynamicPriorities = {};
+                
+                // Initialize agent statuses and calculations
+                this.initializeAgents();
+            }
+
+            initializeAgents() {
+                this.agents.forEach(agent => {
+                    agent.status = this.getAgentStatus(agent);
+                });
+                this.updateAllCalculations();
+            }
+
+            updateAllCalculations() {
+                this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                this.totalAllocated = this.agents.reduce((sum, agent) => sum + agent.allocated, 0);
+            }
+
+            getAgentStatus(agent) {
+                const status = agent.allocated >= agent.demand ? "stable" : 
+                              agent.allocated >= agent.min_required ? "failing" : "critical";
+                console.log(`Agent ${agent.id} status: ${status} (allocated: ${agent.allocated}, demand: ${agent.demand}, min_required: ${agent.min_required})`);
+                return status;
+            }
+
+            startSimulation() {
+                this.isRunning = true;
+                this.updateDisplay();
+                showMessage("Simulation started", "success");
+            }
+
+            stopSimulation() {
+                this.isRunning = false;
+                this.updateDisplay();
+                showMessage("Simulation stopped", "success");
+            }
+
+            resetSimulation() {
+                this.agents.forEach(agent => {
+                    agent.demand = agent.demand * 0.8;
+                    agent.allocated = agent.min_required;
+                    agent.status = this.getAgentStatus(agent);
+                });
+                this.dynamicPriorities = {};
+                // Calculate total demand and allocated directly
+                this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                this.totalAllocated = this.agents.reduce((sum, agent) => sum + agent.allocated, 0);
+                currentDisaster = null;
+                updateSubheadings();
+                this.updateDisplay();
+                showMessage("Simulation reset", "success");
+            }
+
+            triggerDisaster() {
+                const disasterType = document.getElementById('disasterType').value;
+                const impact = parseFloat(document.getElementById('impactLevel').value);
+
+                // Apply disaster effects
+                if (disasterType === "earthquake") {
+                    this.totalSupply *= (1 - impact * 0.4);
+                    this.agents.forEach(agent => {
+                        if (agent.type === "hospital") {
+                            agent.demand *= (1 + impact * 0.5);
+                        } else if (agent.type === "emergency_services") {
+                            agent.demand *= (1 + impact * 0.3);
+                        }
+                    });
+                    // Update total demand after disaster changes
+                    this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                    this.systemStress = Math.min(0.95, this.systemStress + impact * 0.2);
+                    
+                } else if (disasterType === "flood") {
+                    this.totalSupply *= (1 - impact * 0.3);
+                    this.agents.forEach(agent => {
+                        if (agent.type === "water_supply") {
+                            agent.demand *= (1 + impact * 0.4);
+                        } else if (agent.type === "hospital") {
+                            agent.demand *= (1 + impact * 0.2);
+                        }
+                    });
+                    // Update total demand after disaster changes
+                    this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                    this.systemStress = Math.min(0.90, this.systemStress + impact * 0.15);
+                    
+                } else if (disasterType === "power_failure") {
+                    this.totalSupply *= (1 - impact * 0.5);
+                    this.agents.forEach(agent => {
+                        agent.demand *= (1 + impact * 0.1);
+                    });
+                    // Update total demand after disaster changes
+                    this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                    this.systemStress = Math.min(0.98, this.systemStress + impact * 0.25);
+                    
+                } else if (disasterType === "storm") {
+                    this.totalSupply *= (1 - impact * 0.35);
+                    this.agents.forEach(agent => {
+                        const stormEffect = 0.8 + Math.random() * 0.4;
+                        if (agent.type === "residential_commercial") {
+                            agent.demand *= (1 + impact * stormEffect * 0.3);
+                        }
+                    });
+                    // Update total demand after disaster changes
+                    this.totalDemand = this.agents.reduce((sum, agent) => sum + agent.demand, 0);
+                    this.systemStress = Math.min(0.92, this.systemStress + impact * 0.18);
                 }
-            };
-            
-            ws.onclose = () => {
-                console.log('Disconnected from server');
-                document.getElementById('connectionStatus').className = 'status-indicator disconnected';
-                document.getElementById('connectionStatus').textContent = '○ Disconnected';
+
+                // Set current disaster and update subheadings
+                currentDisaster = disasterType;
+                updateSubheadings();
                 
-                // Try to reconnect after 3 seconds
-                setTimeout(() => {
-                    console.log('Attempting to reconnect...');
-                    connectWebSocket();
-                }, 3000);
-            };
+                this.adjustDynamicPriorities();
+                this.reallocateResources();
+                this.updateDisplay();
+                showMessage(`${disasterType.toUpperCase()} disaster triggered with ${impact * 100}% impact`, "success");
+            }
+
+            adjustDynamicPriorities() {
+                this.agents.forEach(agent => {
+                    if (agent.status === "critical" && agent.priority > 1) {
+                        this.dynamicPriorities[agent.id] = agent.priority - 1;
+                    } else if (agent.status === "stable" && this.dynamicPriorities[agent.id]) {
+                        delete this.dynamicPriorities[agent.id];
+                    }
+                });
+            }
+
+            getEffectivePriority(agent) {
+                return this.dynamicPriorities[agent.id] || agent.priority;
+            }
+
+            reallocateResources() {
+                // Sort by effective priority
+                const sortedAgents = [...this.agents].sort((a, b) => {
+                    const priorityA = this.getEffectivePriority(a);
+                    const priorityB = this.getEffectivePriority(b);
+                    return priorityA - priorityB;
+                });
+                
+                let remainingSupply = this.totalSupply;
+                
+                // Allocate minimum requirements first
+                sortedAgents.forEach(agent => {
+                    if (remainingSupply >= agent.min_required) {
+                        agent.allocated = agent.min_required;
+                        remainingSupply -= agent.min_required;
+                    } else {
+                        agent.allocated = remainingSupply * 0.8;
+                        remainingSupply -= agent.allocated;
+                    }
+                    
+                    // Update status
+                    agent.status = this.getAgentStatus(agent);
+                });
+                
+                // Distribute remaining supply proportionally
+                if (remainingSupply > 0) {
+                    const remainingAgents = sortedAgents.filter(agent => agent.allocated < agent.demand);
+                    const remainingDemand = remainingAgents.reduce((sum, agent) => sum + (agent.demand - agent.allocated), 0);
+                    
+                    remainingAgents.forEach(agent => {
+                        if (remainingDemand > 0 && remainingSupply > 0) {
+                            const allocation = Math.min(remainingSupply, agent.demand - agent.allocated);
+                            const proportion = allocation / remainingDemand;
+                            agent.allocated += allocation * proportion;
+                            remainingSupply -= allocation * proportion;
+                            remainingDemand -= allocation * proportion;
+                        }
+                        
+                        // Update status
+                        agent.status = this.getAgentStatus(agent);
+                    });
+                }
+                
+                // Update total allocated
+                this.totalAllocated = this.agents.reduce((sum, agent) => sum + agent.allocated, 0);
+            }
+
+            calculateEfficiency() {
+                let totalScore = 0;
+                const agentCount = this.agents.length;
+                
+                this.agents.forEach(agent => {
+                    const allocationRatio = agent.demand > 0 ? agent.allocated / agent.demand : 0;
+                    
+                    if (allocationRatio >= 0.8) {
+                        totalScore += 100;
+                    } else if (allocationRatio >= 0.5) {
+                        totalScore += 70;
+                    } else if (allocationRatio >= 0.3) {
+                        totalScore += 40;
+                    } else {
+                        totalScore += 10;
+                    }
+                });
+                
+                return Math.round(totalScore / agentCount);
+            }
+
+            getSystemHealth() {
+                const criticalAgents = this.agents.filter(a => a.status === "critical").length;
+                const failingAgents = this.agents.filter(a => a.status === "failing").length;
+                const efficiency = this.calculateEfficiency();
+                
+                if (criticalAgents > 2 || efficiency < 30) return "CRITICAL";
+                if (criticalAgents > 0 || failingAgents > 4 || efficiency < 60) return "WARNING";
+                return "STABLE";
+            }
+
+            getOptimizationSuggestions() {
+                const suggestions = [];
+                const criticalAgents = this.agents.filter(a => a.status === "critical").length;
+                const failingAgents = this.agents.filter(a => a.status === "failing").length;
+                const efficiency = this.calculateEfficiency();
+                const utilization = this.totalDemand > 0 ? (this.totalAllocated / this.totalDemand) * 100 : 0;
+                
+                // Debug logging
+                console.log('Analytics Debug:');
+                console.log('Critical agents count:', criticalAgents);
+                console.log('Failing agents count:', failingAgents);
+                console.log('Agent statuses:', this.agents.map(a => `${a.id}: ${a.status}`));
+                console.log('Efficiency:', efficiency);
+                
+                if (criticalAgents > 0) {
+                    suggestions.push("URGENT: Critical agents need immediate resource allocation");
+                }
+                if (criticalAgents > 3) {
+                    suggestions.push("CRITICAL: Multiple critical agents - enable dynamic priorities");
+                }
+                if (failingAgents > 3) {
+                    suggestions.push("Multiple agents failing - consider resource reallocation");
+                }
+                if (efficiency < 30) {
+                    suggestions.push("Efficiency is critically low - prioritize critical services");
+                } else if (efficiency < 60) {
+                    suggestions.push("Efficiency is low - optimize resource allocation");
+                }
+                if (this.systemStress > 0.8) {
+                    suggestions.push("System stress is high - reduce demand or increase supply");
+                }
+                if (utilization < 50) {
+                    suggestions.push("Low utilization - reallocate unused resources");
+                } else if (utilization > 95) {
+                    suggestions.push("High utilization - consider demand reduction");
+                }
+                
+                const elevatedAgents = Object.keys(this.dynamicPriorities).length;
+                if (elevatedAgents > 0) {
+                    suggestions.push(`${elevatedAgents} agents have elevated priorities - monitor closely`);
+                }
+                
+                return suggestions;
+            }
+
+            updateDisplay() {
+                // Update system metrics
+                document.getElementById('totalSupply').textContent = this.totalSupply.toFixed(1);
+                document.getElementById('totalDemand').textContent = this.totalDemand.toFixed(1);
+                document.getElementById('totalAllocated').textContent = this.totalAllocated.toFixed(1);
+                document.getElementById('systemStress').textContent = (this.systemStress * 100).toFixed(1) + '%';
+                
+                const efficiency = this.calculateEfficiency();
+                document.getElementById('efficiencyScore').textContent = efficiency.toFixed(1) + '%';
+                document.getElementById('systemHealth').textContent = this.getSystemHealth();
+
+                // Update agents
+                const agentGrid = document.getElementById('agentGrid');
+                agentGrid.innerHTML = '';
+
+                this.agents.forEach(agent => {
+                    const agentDiv = document.createElement('div');
+                    agentDiv.className = `agent ${agent.type.replace('_', '')}`;
+                    
+                    const statusClass = agent.status === 'critical' ? 'status-critical' : 
+                                       agent.status === 'failing' ? 'status-failing' : 'status-stable';
+                    
+                    const allocationRatio = agent.demand > 0 ? (agent.allocated / agent.demand) * 100 : 0;
+                    const effectivePriority = this.getEffectivePriority(agent);
+                    
+                    agentDiv.innerHTML = `
+                        <div class="agent-header">
+                            <div class="agent-name">${agent.name}</div>
+                            <div class="agent-status ${statusClass}">${agent.status.toUpperCase()}</div>
+                            <div class="priority-badge priority-${effectivePriority}">P${effectivePriority}</div>
+                        </div>
+                        <div class="agent-metrics">
+                            <div class="metric-row">
+                                <span>Priority:</span>
+                                <span>P${effectivePriority} ${agent.priority !== effectivePriority ? '(↑)' : ''}</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Demand:</span>
+                                <span>${agent.demand.toFixed(1)}</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Allocated:</span>
+                                <span>${agent.allocated.toFixed(1)}</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Allocation:</span>
+                                <span style="color: ${allocationRatio >= 80 ? '#4caf50' : allocationRatio >= 50 ? '#ff9800' : '#f44336'}">
+                                    ${allocationRatio.toFixed(1)}%
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    agentGrid.appendChild(agentDiv);
+                });
+
+                showMessage(`Updated: ${this.agents.length} agents`, 'success');
+            }
+
+            showAnalytics() {
+                const panel = document.getElementById('analyticsPanel');
+                const efficiencyDisplay = document.getElementById('efficiencyDisplay');
+                const suggestionsContent = document.getElementById('suggestionsContent');
+                
+                if (panel.style.display === 'none') {
+                    panel.style.display = 'block';
+                    
+                    const efficiency = this.calculateEfficiency();
+                    efficiencyDisplay.textContent = efficiency.toFixed(1) + '%';
+                    
+                    if (efficiency >= 80) {
+                        efficiencyDisplay.className = 'efficiency-score efficiency-high';
+                    } else if (efficiency >= 50) {
+                        efficiencyDisplay.className = 'efficiency-score efficiency-medium';
+                    } else {
+                        efficiencyDisplay.className = 'efficiency-score efficiency-low';
+                    }
+                    
+                    const suggestions = this.getOptimizationSuggestions();
+                    suggestionsContent.innerHTML = suggestions.map(s => 
+                        `<div class="suggestion-item">💡 ${s}</div>`
+                    ).join('');
+                    
+                    showMessage("Analytics panel opened", "info");
+                } else {
+                    panel.style.display = 'none';
+                    showMessage("Analytics panel closed", "info");
+                }
+            }
+        }
+
+        // Function to handle disaster type dropdown change
+        function onDisasterTypeChange() {
+            const disasterType = document.getElementById('disasterType').value;
+            if (disasterType) {
+                currentDisaster = disasterType;
+                updateSubheadings();
+                showMessage(`Disaster type changed to: ${disasterType}`, 'info');
+            } else {
+                currentDisaster = null;
+                updateSubheadings();
+                showMessage('Disaster type cleared', 'info');
+            }
+        }
+
+        // Global function to update subheadings
+        function updateSubheadings() {
+            const statusTitle = document.getElementById('statusTitle');
+            const metric1Title = document.getElementById('metric1Title');
+            const metric2Title = document.getElementById('metric2Title');
+            const metric3Title = document.getElementById('metric3Title');
+            const metric4Title = document.getElementById('metric4Title');
+            const metric5Title = document.getElementById('metric5Title');
+            const metric6Title = document.getElementById('metric6Title');
             
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-            };
-        }
-
-        function updateUI() {
-            if (!simulationData) return;
-
-            // Update system status
-            document.getElementById('totalSupply').textContent = simulationData.total_supply.toFixed(1);
-            document.getElementById('totalDemand').textContent = simulationData.total_demand.toFixed(1);
-            document.getElementById('totalAllocated').textContent = simulationData.total_allocated.toFixed(1);
-            document.getElementById('utilization').textContent = simulationData.utilization.toFixed(1) + '%';
-            document.getElementById('systemStress').textContent = (simulationData.system_stress * 100).toFixed(1) + '%';
-            document.getElementById('totalPenalty').textContent = simulationData.total_penalty.toFixed(1);
-
-            // Update progress bars
-            const utilizationBar = document.getElementById('utilizationBar');
-            utilizationBar.style.width = Math.min(simulationData.utilization, 100) + '%';
-            utilizationBar.style.backgroundColor = getUtilizationColor(simulationData.utilization);
-
-            const stressBar = document.getElementById('stressBar');
-            stressBar.style.width = (simulationData.system_stress * 100) + '%';
-            stressBar.style.backgroundColor = getStressColor(simulationData.system_stress);
-
-            // Update agents
-            updateAgents();
-        }
-
-        function getUtilizationColor(utilization) {
-            if (utilization < 50) return '#2196f3';
-            if (utilization < 80) return '#ff9800';
-            return '#f44336';
-        }
-
-        function getStressColor(stress) {
-            if (stress < 0.3) return '#4caf50';
-            if (stress < 0.7) return '#ff9800';
-            return '#f44336';
-        }
-
-        function updateAgents() {
-            const container = document.getElementById('agentsContainer');
-            container.innerHTML = '';
-
-            if (!simulationData || !simulationData.agents) {
-                container.innerHTML = '<div class="loading">No agent data available</div>';
+            if (!currentDisaster) {
+                // Default subheadings
+                if (statusTitle) statusTitle.textContent = 'System Status';
+                if (metric1Title) metric1Title.textContent = 'Power Supply';
+                if (metric2Title) metric2Title.textContent = 'Total Demand';
+                if (metric3Title) metric3Title.textContent = 'Allocated';
+                if (metric4Title) metric4Title.textContent = 'System Stress';
+                if (metric5Title) metric5Title.textContent = 'Efficiency Score';
+                if (metric6Title) metric6Title.textContent = 'System Health';
                 return;
             }
 
-            try {
-                simulationData.agents.forEach((agent, index) => {
-                    console.log('Processing agent:', agent);
-                    const agentCard = createAgentCard(agent);
-                    container.appendChild(agentCard);
-                });
-            } catch (error) {
-                console.error('Error updating agents:', error);
-                container.innerHTML = '<div class="loading">Error loading agent data</div>';
+            // Disaster-specific subheadings
+            if (currentDisaster === "earthquake") {
+                if (statusTitle) statusTitle.textContent = '🌋 Earthquake Response Status';
+                if (metric1Title) metric1Title.textContent = 'Grid Power';
+                if (metric2Title) metric2Title.textContent = 'Medical Demand';
+                if (metric3Title) metric3Title.textContent = 'Emergency Supply';
+                if (metric4Title) metric4Title.textContent = 'Structural Stress';
+                if (metric5Title) metric5Title.textContent = 'Response Efficiency';
+                if (metric6Title) metric6Title.textContent = 'Crisis Health';
+            } else if (currentDisaster === "flood") {
+                if (statusTitle) statusTitle.textContent = '🌊 Flood Response Status';
+                if (metric1Title) metric1Title.textContent = 'Power Availability';
+                if (metric2Title) metric2Title.textContent = 'Water Demand';
+                if (metric3Title) metric3Title.textContent = 'Pump Supply';
+                if (metric4Title) metric4Title.textContent = 'Flood Stress';
+                if (metric5Title) metric5Title.textContent = 'Evacuation Efficiency';
+                if (metric6Title) metric6Title.textContent = 'Emergency Health';
+            } else if (currentDisaster === "power_failure") {
+                if (statusTitle) statusTitle.textContent = '⚡ Power Failure Response';
+                if (metric1Title) metric1Title.textContent = 'Backup Power';
+                if (metric2Title) metric2Title.textContent = 'Critical Demand';
+                if (metric3Title) metric3Title.textContent = 'Emergency Supply';
+                if (metric4Title) metric4Title.textContent = 'Grid Stress';
+                if (metric5Title) metric5Title.textContent = 'Recovery Efficiency';
+                if (metric6Title) metric6Title.textContent = 'System Health';
+            } else if (currentDisaster === "storm") {
+                if (statusTitle) statusTitle.textContent = '🌪️ Storm Response Status';
+                if (metric1Title) metric1Title.textContent = 'Available Power';
+                if (metric2Title) metric2Title.textContent = 'Storm Demand';
+                if (metric3Title) metric3Title.textContent = 'Resource Supply';
+                if (metric4Title) metric4Title.textContent = 'Weather Stress';
+                if (metric5Title) metric5Title.textContent = 'Response Efficiency';
+                if (metric6Title) metric6Title.textContent = 'Safety Health';
             }
         }
 
-        function createAgentCard(agent) {
-            const card = document.createElement('div');
-            card.className = 'agent-card';
-
-            const allocationRatio = agent.demand > 0 ? (agent.allocated / agent.demand) * 100 : 0;
-            const icon = getAgentIcon(agent.type);
-            const statusColor = getStatusColor(agent.status);
-
-            card.innerHTML = `
-                <div class="agent-header">
-                    <div class="agent-icon">${icon}</div>
-                    <div class="agent-info">
-                        <h3 class="agent-name">${agent.name}</h3>
-                        <span class="agent-status ${agent.status}">${agent.status.toUpperCase()}</span>
-                    </div>
-                    <div class="agent-priority">
-                        <span class="priority-badge priority-${agent.priority}">P${agent.priority}</span>
-                    </div>
-                </div>
-                
-                <div class="agent-metrics">
-                    <div class="metric-row">
-                        <span class="metric-label">Demand:</span>
-                        <span class="metric-value">${agent.demand.toFixed(1)}</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Allocated:</span>
-                        <span class="metric-value">${agent.allocated.toFixed(1)}</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Min Required:</span>
-                        <span class="metric-value">${agent.min_required.toFixed(1)}</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Allocation Ratio:</span>
-                        <span class="metric-value" style="color: ${allocationRatio >= 80 ? '#4caf50' : allocationRatio >= 50 ? '#ff9800' : '#f44336'}">
-                            ${allocationRatio.toFixed(1)}%
-                        </span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Penalty:</span>
-                        <span class="metric-value">${agent.penalty.toFixed(1)}</span>
-                    </div>
-                </div>
-            `;
-
-            return card;
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('messageArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageArea.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
         }
 
-        function getAgentIcon(type) {
-            switch (type) {
-                case 'hospital': return '🏥';
-                case 'emergency_services': return '🚑';
-                case 'water_supply': return '💧';
-                case 'residential_commercial': return '🏢';
-                default: return '📊';
-            }
-        }
-
-        function getStatusColor(status) {
-            switch (status) {
-                case 'critical': return '#f44336';
-                case 'stable': return '#4caf50';
-                case 'failing': return '#ff9800';
-                default: return '#666';
-            }
-        }
-
-        async function startSimulation() {
-            try {
-                const response = await fetch('http://localhost:8000/api/simulation/start', { method: 'POST' });
-                const result = await response.json();
-                isRunning = true;
-                updateSimulationStatus();
-                console.log(result.message);
-            } catch (error) {
-                console.error('Error starting simulation:', error);
-            }
-        }
-
-        async function stopSimulation() {
-            try {
-                const response = await fetch('http://localhost:8000/api/simulation/stop', { method: 'POST' });
-                const result = await response.json();
-                isRunning = false;
-                updateSimulationStatus();
-                console.log(result.message);
-            } catch (error) {
-                console.error('Error stopping simulation:', error);
-            }
-        }
-
-        async function resetSimulation() {
-            try {
-                const response = await fetch('http://localhost:8000/api/simulation/reset', { method: 'POST' });
-                const result = await response.json();
-                isRunning = false;
-                updateSimulationStatus();
-                console.log(result.message);
-            } catch (error) {
-                console.error('Error resetting simulation:', error);
-            }
-        }
-
-        async function triggerDisaster() {
-            const disasterType = document.getElementById('disaster-type').value;
-            const impact = parseFloat(document.getElementById('impact-level').value);
-
-            try {
-                const response = await fetch('http://localhost:8000/api/disaster/trigger', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ type: disasterType, impact }),
-                });
-                const result = await response.json();
-                console.log(result.message);
-            } catch (error) {
-                console.error('Error triggering disaster:', error);
-            }
-        }
-
-        function updateImpactValue(value) {
-            document.getElementById('impactValue').textContent = value;
-        }
-
-        function updateSimulationStatus() {
-            const statusElement = document.getElementById('simulationStatus');
-            if (isRunning) {
-                statusElement.className = 'status running';
-                statusElement.textContent = '● Running';
-            } else {
-                statusElement.className = 'status stopped';
-                statusElement.textContent = '○ Stopped';
-            }
-        }
-
-        // Initialize
-        connectWebSocket();
-
-        // Fetch initial data and set up polling fallback
-        function fetchInitialData() {
-            fetch('http://localhost:8000/api/status')
-                .then(response => response.json())
-                .then(data => {
-                    simulationData = data;
-                    updateUI();
-                    console.log('Initial data loaded:', data);
-                })
-                .catch(error => {
-                    console.error('Error fetching initial data:', error);
-                });
-        }
-
-        fetchInitialData();
-
-        // Set up polling as fallback
-        setInterval(() => {
-            if (!ws || ws.readyState !== WebSocket.OPEN) {
-                fetchInitialData();
-            }
-        }, 2000);
+        // Initialize working crisis simulation
+        const simulation = new WorkingCrisisSimulation();
+        
+        // Bind event handlers
+        window.startSimulation = () => simulation.startSimulation();
+        window.stopSimulation = () => simulation.stopSimulation();
+        window.resetSimulation = () => simulation.resetSimulation();
+        window.triggerDisaster = () => simulation.triggerDisaster();
+        window.showAnalytics = () => simulation.showAnalytics();
+        
+        // Initial display update
+        simulation.updateDisplay();
     </script>
 </body>
 </html>
